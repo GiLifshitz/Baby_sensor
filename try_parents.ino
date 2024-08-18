@@ -5,7 +5,7 @@
 #include <HTTPClient.h>
 
 // ThingSpeak details
-const char* thingSpeakServer = "http://api.thingspeak.com/update";
+const char* thingSpeakServer = "https://api.thingspeak.com/update?api_key=O6JD5G6007EWZCIV&field1=0";
 const char* apiKey = "O6JD5G6007EWZCIV"; // Your ThingSpeak write API key
 
 // MAC address of the Bear ESP32
