@@ -54,27 +54,27 @@ void debugPrintData() {
 void OnDataRecv(const esp_now_recv_info *info, const uint8_t *incomingData, int len) {
     // Check if the data is coming from the mattress
     if (memcmp(info->src_addr, mattressAddress, 6) == 0) {
-        // Data from mattress, treat it as a string
-        char message[len + 1];
-        memcpy(message, incomingData, len);
-        message[len] = '\0'; // Null-terminate the string
+        // Data from mattress, treat it as an integer (1 or 0)
+        int movementStatus = incomingData[0];
         
-        Serial.print("Received from mattress: ");
-        Serial.println(message);
+        if (movementStatus == 1) {
+            Serial.println("Movement started");
+            u8g2.clearBuffer();
+            u8g2.setFont(u8g2_font_ncenB08_tr);
+            u8g2.drawStr(10, 30, "Movement started");
+            u8g2.sendBuffer();
+            digitalWrite(ledPin, HIGH);  // Turn on LED
+        } else if (movementStatus == 0) {
+            Serial.println("Movement stopped");
+            u8g2.clearBuffer();
+            u8g2.setFont(u8g2_font_ncenB08_tr);
+            u8g2.drawStr(10, 30, "Movement stopped");
+            u8g2.sendBuffer();
+            digitalWrite(ledPin, LOW);   // Turn off LED
+        }
         
         displayMovement = true;
         movementDisplayTime = millis();
-        u8g2.clearBuffer();
-        u8g2.setFont(u8g2_font_ncenB08_tr);
-        u8g2.drawStr(10, 30, message);
-        u8g2.sendBuffer();
-        
-        // LED control
-        if (strstr(message, "started") != NULL) {
-            digitalWrite(ledPin, HIGH);  // Turn on LED
-        } else if (strstr(message, "stopped") != NULL) {
-            digitalWrite(ledPin, LOW);   // Turn off LED
-        }
     } else {
         // Assume data from bear, use the struct
         memcpy(&myData, incomingData, sizeof(myData));
