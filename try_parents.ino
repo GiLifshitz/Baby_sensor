@@ -2,7 +2,7 @@
 #include <U8g2lib.h>
 #include <WiFi.h>
 #include <esp_now.h>
-#include <HTTPClient.h>  // Include HTTPClient library
+#include <ThingSpeak.h>  // Include ThingSpeak library
 
 // Initialization of the display with hardware I2C
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
@@ -27,30 +27,10 @@ unsigned long movementDisplayTime = 0;
 unsigned long messageDisplayDuration = 2000;  // Duration to show movement messages
 
 // ThingSpeak settings
-const String apiKey = "O6JD5G6007EWZCIV";
-const String thingSpeakBaseURL = "https://api.thingspeak.com/update?api_key=" + apiKey;
-
-// Function to upload data to ThingSpeak
-void uploadDataToThingSpeak(float temperature, float humidity, int movement) {
-    if (WiFi.status() == WL_CONNECTED) {
-        HTTPClient http;
-        String url = thingSpeakBaseURL;
-        url += "&field1=" + String(temperature);
-        url += "&field2=" + String(humidity);
-        url += "&field3=" + String(movement);
-
-        http.begin(url);
-        int httpResponseCode = http.GET();
-        if (httpResponseCode > 0) {
-            Serial.printf("HTTP Response code: %d\n", httpResponseCode);
-        } else {
-            Serial.printf("Error code: %d\n", httpResponseCode);
-        }
-        http.end();
-    } else {
-        Serial.println("WiFi not connected");
-    }
-}
+const char* ssid = "Kim";
+const char* password = "0526693338";
+const unsigned long channelID = 2607721;  // Channel ID
+const char* apiKey = "O6JD5G6007EWZCIV";  // Write API Key
 
 void displayTempHumidity() {
     u8g2.clearBuffer();
@@ -101,7 +81,10 @@ void OnDataRecv(const esp_now_recv_info *info, const uint8_t *incomingData, int 
         movementDisplayTime = millis();
 
         // Upload movement status to ThingSpeak
-        uploadDataToThingSpeak(myData.temperature, myData.humidity, movementStatus);
+        ThingSpeak.setField(1, myData.temperature);
+        ThingSpeak.setField(2, myData.humidity);
+        ThingSpeak.setField(3, movementStatus);
+        ThingSpeak.writeFields(channelID, apiKey);
 
     } else if (memcmp(info->src_addr, bearAddress, 6) == 0) {
         memcpy(&myData, incomingData, sizeof(myData));
@@ -117,12 +100,15 @@ void setup() {
     pinMode(ledPin, OUTPUT);
     digitalWrite(ledPin, LOW);
 
-    WiFi.begin("Kim", "0526693338");
+    // Connect to WiFi
+    WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
         delay(1000);
         Serial.print(".");
     }
     Serial.println("Connected to WiFi");
+
+    ThingSpeak.begin(WiFi);  // Initialize ThingSpeak
 
     WiFi.mode(WIFI_STA);
     if (esp_now_init() != ESP_OK) {
@@ -175,6 +161,9 @@ void loop() {
         lastUpdateTime = currentTime;
         displayTempHumidity();
         // Upload data to ThingSpeak every 5 minutes
-        uploadDataToThingSpeak(myData.temperature, myData.humidity, 0);  // Sending 0 for movement status
+        ThingSpeak.setField(1, myData.temperature);
+        ThingSpeak.setField(2, myData.humidity);
+        ThingSpeak.setField(3, 0);  // Sending 0 for movement status
+        ThingSpeak.writeFields(channelID, apiKey);
     }
 }
