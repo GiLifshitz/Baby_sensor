@@ -94,7 +94,7 @@ void loop() {
     consecutiveStopCount++;
 
     // Check for stop message condition
-    if (consecutiveStopCount >= 15 && movementDetected) {
+    if (consecutiveStopCount >= 400 && movementDetected) {
       movementDetected = false;
       Serial.println("Movement stopped");
       uint8_t data = 0; // Send 0 for movement stopped
