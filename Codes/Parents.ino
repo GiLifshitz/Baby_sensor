@@ -10,11 +10,10 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* 
 uint8_t bearAddress[] = {0x44, 0x17, 0x93, 0xE0, 0xA4, 0x20};  // Bear
 uint8_t mattressAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4F, 0x18};  // Mattress
 
-// Structure to receive data from the bear (unchanged)
+// Structure to receive temperature and humidity data from the Bear device
 typedef struct struct_message {
     float temperature;
     float humidity;
-    char message[32];
 } struct_message;
 
 // Create a struct_message instance
@@ -54,45 +53,35 @@ void debugPrintData() {
 void OnDataRecv(const esp_now_recv_info *info, const uint8_t *incomingData, int len) {
     // Check if the data is coming from the mattress
     if (memcmp(info->src_addr, mattressAddress, 6) == 0) {
-        // Data from mattress, treat it as an integer (1 or 0)
+        // Data from mattress, treat it as a single byte (1 or 0)
         int movementStatus = incomingData[0];
         
+        Serial.print("Received from mattress: ");
         if (movementStatus == 1) {
             Serial.println("Movement started");
+            digitalWrite(ledPin, HIGH);  // Turn on LED
             u8g2.clearBuffer();
             u8g2.setFont(u8g2_font_ncenB08_tr);
             u8g2.drawStr(10, 30, "Movement started");
             u8g2.sendBuffer();
-            digitalWrite(ledPin, HIGH);  // Turn on LED
         } else if (movementStatus == 0) {
             Serial.println("Movement stopped");
+            digitalWrite(ledPin, LOW);   // Turn off LED
             u8g2.clearBuffer();
             u8g2.setFont(u8g2_font_ncenB08_tr);
             u8g2.drawStr(10, 30, "Movement stopped");
             u8g2.sendBuffer();
-            digitalWrite(ledPin, LOW);   // Turn off LED
         }
         
         displayMovement = true;
         movementDisplayTime = millis();
-    } else {
+
+    } else if (memcmp(info->src_addr, bearAddress, 6) == 0) {
         // Assume data from bear, use the struct
         memcpy(&myData, incomingData, sizeof(myData));
-        Serial.print("Received from bear: ");
-        Serial.println(myData.message);
-        
+        Serial.println("Received from bear:");
         debugPrintData();  // Print data to Serial Monitor for debugging
-
-        if (strcmp(myData.message, "Movement detected") == 0 || strcmp(myData.message, "Movement stopped") == 0) {
-            displayMovement = true;
-            movementDisplayTime = millis();
-            u8g2.clearBuffer();
-            u8g2.setFont(u8g2_font_ncenB08_tr);
-            u8g2.drawStr(10, 30, myData.message);
-            u8g2.sendBuffer();
-        } else {
-            displayTempHumidity();
-        }
+        displayTempHumidity();
     }
 }
 
