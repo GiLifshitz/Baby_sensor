@@ -2,7 +2,7 @@
 #include <U8g2lib.h>
 #include <WiFi.h>
 #include <esp_now.h>
-#include <ThingSpeak.h>  // Include ThingSpeak library
+#include <ThingSpeak.h>
 
 // Initialization of the display with hardware I2C
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
@@ -31,6 +31,8 @@ const char* ssid = "Kim";
 const char* password = "0526693338";
 const unsigned long channelID = 2607721;  // Channel ID
 const char* apiKey = "O6JD5G6007EWZCIV";  // Write API Key
+
+WiFiClient client;  // Create a WiFiClient object
 
 void displayTempHumidity() {
     u8g2.clearBuffer();
@@ -108,7 +110,7 @@ void setup() {
     }
     Serial.println("Connected to WiFi");
 
-    ThingSpeak.begin(WiFi);  // Initialize ThingSpeak
+    ThingSpeak.begin(client);  // Initialize ThingSpeak with WiFiClient
 
     WiFi.mode(WIFI_STA);
     if (esp_now_init() != ESP_OK) {
