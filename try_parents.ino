@@ -86,7 +86,11 @@ void OnDataRecv(const esp_now_recv_info *info, const uint8_t *incomingData, int 
         ThingSpeak.setField(1, myData.temperature);
         ThingSpeak.setField(2, myData.humidity);
         ThingSpeak.setField(3, movementStatus);
-        ThingSpeak.writeFields(channelID, apiKey);
+        if (ThingSpeak.writeFields(channelID, apiKey)) {
+            Serial.println("Data successfully sent to ThingSpeak.");
+        } else {
+            Serial.println("Failed to send data to ThingSpeak.");
+        }
 
     } else if (memcmp(info->src_addr, bearAddress, 6) == 0) {
         memcpy(&myData, incomingData, sizeof(myData));
@@ -166,6 +170,10 @@ void loop() {
         ThingSpeak.setField(1, myData.temperature);
         ThingSpeak.setField(2, myData.humidity);
         ThingSpeak.setField(3, 0);  // Sending 0 for movement status
-        ThingSpeak.writeFields(channelID, apiKey);
+        if (ThingSpeak.writeFields(channelID, apiKey)) {
+            Serial.println("Data successfully sent to ThingSpeak.");
+        } else {
+            Serial.println("Failed to send data to ThingSpeak.");
+        }
     }
 }
