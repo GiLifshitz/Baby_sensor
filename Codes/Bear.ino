@@ -4,19 +4,18 @@
 #include <Adafruit_SHT31.h>
 
 // MAC address of the Parent ESP32 (Receiver with OLED)
-uint8_t parentAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4D, 0x0C}; // Replace with actual MAC address of the Parent ESP
+uint8_t parentAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4D, 0x0C}; // Replace with the actual MAC address of the Parent ESP32
 
 // Structure to send data
 typedef struct struct_message {
     float temperature;
     float humidity;
-    char message[32];
 } struct_message;
 
 // Create a struct_message instance
 struct_message myData;
 
-// Create an instance of the sensor
+// Create an instance of the SHT31 sensor
 Adafruit_SHT31 sht31 = Adafruit_SHT31();
 
 void setup() {
@@ -54,32 +53,30 @@ void setup() {
 }
 
 void loop() {
-    // Read temperature and humidity
+    // Read temperature and humidity from the SHT31 sensor
     float t = sht31.readTemperature();
     float h = sht31.readHumidity();
 
-    if (!isnan(t)) {  // Check if the reading is valid
+    // Check if the readings are valid
+    if (!isnan(t)) {
         myData.temperature = t;
     } else {
         Serial.println("Failed to read temperature");
     }
 
-    if (!isnan(h)) {  // Check if the reading is valid
+    if (!isnan(h)) {
         myData.humidity = h;
     } else {
         Serial.println("Failed to read humidity");
     }
 
-    // Prepare data
-    snprintf(myData.message, sizeof(myData.message), "%.2f C, %.2f %%", myData.temperature, myData.humidity);
-
-    // Send message
+    // Send the temperature and humidity data to the Parent device
     esp_err_t result = esp_now_send(parentAddress, (uint8_t *) &myData, sizeof(myData));
     if (result == ESP_OK) {
-        Serial.println("Message sent successfully");
+        Serial.println("Data sent successfully");
     } else {
-        Serial.println("Error sending the message");
+        Serial.println("Error sending data");
     }
 
-    delay(30000); // Send a message every 5 seconds
+    delay(30000); // Send data every 30 seconds
 }
