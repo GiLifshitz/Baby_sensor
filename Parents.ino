@@ -10,7 +10,7 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* 
 uint8_t bearAddress[] = {0x44, 0x17, 0x93, 0xE0, 0xA4, 0x20};  // Bear
 uint8_t mattressAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4F, 0x18};  // Mattress
 
-// Structure to receive data
+// Structure to receive data from the bear (unchanged)
 typedef struct struct_message {
     float temperature;
     float humidity;
@@ -30,18 +30,15 @@ void displayTempHumidity() {
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB14_tr);
 
-    // Format the temperature and humidity data as strings
     char tempStr[32];
     char humStr[32];
 
     snprintf(tempStr, sizeof(tempStr), "%.2f C", myData.temperature);
     snprintf(humStr, sizeof(humStr), "%.2f %%", myData.humidity);
 
-    // Draw each string on the OLED screen at a different Y coordinate
     u8g2.drawStr(20, 30, tempStr);
     u8g2.drawStr(20, 50, humStr);
 
-    // Send the buffer to the OLED display
     u8g2.sendBuffer();
 }
 
@@ -55,39 +52,56 @@ void debugPrintData() {
 
 // Callback function to handle received data
 void OnDataRecv(const esp_now_recv_info *info, const uint8_t *incomingData, int len) {
-    memcpy(&myData, incomingData, sizeof(myData));
-    Serial.print("Message: ");
-    Serial.println(myData.message);
-    
-    debugPrintData();  // Print data to Serial Monitor for debugging
-
-    if (strcmp(myData.message, "Movement detected") == 0 || strcmp(myData.message, "Movement stopped") == 0) {
+    // Check if the data is coming from the mattress
+    if (memcmp(info->src_addr, mattressAddress, 6) == 0) {
+        // Data from mattress, treat it as a string
+        char message[len + 1];
+        memcpy(message, incomingData, len);
+        message[len] = '\0'; // Null-terminate the string
+        
+        Serial.print("Received from mattress: ");
+        Serial.println(message);
+        
         displayMovement = true;
         movementDisplayTime = millis();
         u8g2.clearBuffer();
         u8g2.setFont(u8g2_font_ncenB08_tr);
-//        u8g2.drawStr(10, 30, myData.message);
-//        u8g2.drawStr(10, 30, "Movment");
+        u8g2.drawStr(10, 30, message);
         u8g2.sendBuffer();
+        
+        // LED control
+        if (strstr(message, "started") != NULL) {
+            digitalWrite(ledPin, HIGH);  // Turn on LED
+        } else if (strstr(message, "stopped") != NULL) {
+            digitalWrite(ledPin, LOW);   // Turn off LED
+        }
     } else {
-        displayTempHumidity();
-    }
+        // Assume data from bear, use the struct
+        memcpy(&myData, incomingData, sizeof(myData));
+        Serial.print("Received from bear: ");
+        Serial.println(myData.message);
+        
+        debugPrintData();  // Print data to Serial Monitor for debugging
 
-    // LED control
-    if (strcmp(myData.message, "Movement detected") == 0) {
-        digitalWrite(ledPin, HIGH);  // Turn on LED
-    } else if (strcmp(myData.message, "Movement stopped") == 0) {
-        digitalWrite(ledPin, LOW);   // Turn off LED
+        if (strcmp(myData.message, "Movement detected") == 0 || strcmp(myData.message, "Movement stopped") == 0) {
+            displayMovement = true;
+            movementDisplayTime = millis();
+            u8g2.clearBuffer();
+            u8g2.setFont(u8g2_font_ncenB08_tr);
+            u8g2.drawStr(10, 30, myData.message);
+            u8g2.sendBuffer();
+        } else {
+            displayTempHumidity();
+        }
     }
 }
 
 void setup() {
-    Serial.begin(115200); // Start serial for debugging
-    u8g2.begin(); // Initialize the display
+    Serial.begin(115200);
+    u8g2.begin();
     pinMode(ledPin, OUTPUT);
-    digitalWrite(ledPin, LOW); // Start with LED off
+    digitalWrite(ledPin, LOW);
 
-    // Initialize WiFi for ESP-NOW
     WiFi.mode(WIFI_STA);
     if (esp_now_init() != ESP_OK) {
         Serial.println("Error initializing ESP-NOW");
@@ -96,7 +110,6 @@ void setup() {
         Serial.println("ESP-NOW initialized");
     }
 
-    // Register callback function to handle received data
     esp_now_register_recv_cb(OnDataRecv);
     
     // Add Bear as peer
@@ -131,13 +144,11 @@ void setup() {
 void loop() {
     unsigned long currentTime = millis();
     
-    // Display movement message for a fixed duration
     if (displayMovement && (currentTime - movementDisplayTime >= messageDisplayDuration)) {
         displayMovement = false;
         displayTempHumidity();
     }
 
-    // Update temperature and humidity every 5 minutes
     if (!displayMovement && (currentTime - lastUpdateTime >= 300000)) {
         lastUpdateTime = currentTime;
         displayTempHumidity();
