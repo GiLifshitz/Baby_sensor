@@ -80,14 +80,13 @@ void loop() {
     if (consecutiveMovementCount >= 3 && !movementDetected) {
       movementDetected = true;
       Serial.println("Movement started");
-      // Send message via ESP-NOW
-      const char *message = "Movement started";
-      esp_err_t result = esp_now_send(parentAddress, (uint8_t *)message, strlen(message) + 1);
+      uint8_t data = 1; // Send 1 for movement started
+      esp_err_t result = esp_now_send(parentAddress, &data, sizeof(data));
 
       if (result == ESP_OK) {
-        Serial.println("Message sent successfully");
+        Serial.println("Movement started signal sent successfully");
       } else {
-        Serial.println("Error sending the message");
+        Serial.println("Error sending movement started signal");
       }
     }
   } else {
@@ -98,14 +97,13 @@ void loop() {
     if (consecutiveStopCount >= 15 && movementDetected) {
       movementDetected = false;
       Serial.println("Movement stopped");
-      // Send message via ESP-NOW
-      const char *message = "Movement stopped";
-      esp_err_t result = esp_now_send(parentAddress, (uint8_t *)message, strlen(message) + 1);
+      uint8_t data = 0; // Send 0 for movement stopped
+      esp_err_t result = esp_now_send(parentAddress, &data, sizeof(data));
 
       if (result == ESP_OK) {
-        Serial.println("Message sent successfully");
+        Serial.println("Movement stopped signal sent successfully");
       } else {
-        Serial.println("Error sending the message");
+        Serial.println("Error sending movement stopped signal");
       }
     }
   }
