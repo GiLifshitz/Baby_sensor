@@ -1,179 +1,148 @@
-#include <Wire.h>
-#include <U8g2lib.h>
-#include <WiFi.h>
+/*
+  Rui Santos & Sara Santos - Random Nerd Tutorials
+  Complete project details at https://RandomNerdTutorials.com/esp32-esp-now-wi-fi-web-server/
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
+  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*/
 #include <esp_now.h>
-#include <ThingSpeak.h>
+#include <esp_wifi.h>
+#include <WiFi.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_SHT31.h>
 
-// Initialization of the display with hardware I2C
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
+// Set your Board ID (ESP32 Sender #1 = BOARD_ID 1, ESP32 Sender #2 = BOARD_ID 2, etc)
+#define BOARD_ID 1
 
-// MAC addresses of the sender devices
-uint8_t bearAddress[] = {0x44, 0x17, 0x93, 0xE0, 0xA4, 0x20};  // Bear
-uint8_t mattressAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4F, 0x18};  // Mattress
+// I2C address of the SHT31 sensor
+#define SHT31_ADDR 0x44
 
-// Structure to receive temperature and humidity data from the Bear device
+Adafruit_SHT31 sht31 = Adafruit_SHT31();
+
+//MAC Address of the receiver 
+uint8_t broadcastAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4D, 0x0C};
+
+//Structure example to send data
+//Must match the receiver structure
 typedef struct struct_message {
-    float temperature;
-    float humidity;
+    int id;
+    float temp;
+    float hum;
+    int readingId;
 } struct_message;
 
-// Create a struct_message instance
+esp_now_peer_info_t peerInfo;
+
+//Create a struct_message called myData
 struct_message myData;
 
-const int ledPin = A4; // LED pin
-unsigned long lastUpdateTime = 0;
-bool displayMovement = false;
-unsigned long movementDisplayTime = 0;
-unsigned long messageDisplayDuration = 2000;  // Duration to show movement messages
+unsigned long previousMillis = 0;   // Stores last time temperature was published
+const long interval = 10000;        // Interval at which to publish sensor readings
 
-// ThingSpeak settings
-const char* ssid = "Kim";
-const char* password = "0526693338";
-const unsigned long channelID = 2607721;  // Channel ID
-const char* apiKey = "O6JD5G6007EWZCIV";  // Write API Key
+unsigned int readingId = 0;
 
-WiFiClient client;  // Create a WiFiClient object
+// Insert your SSID
+constexpr char WIFI_SSID[] = "REPLACE_WITH_YOUR_SSID";
 
-void displayTempHumidity() {
-    u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_ncenB14_tr);
-
-    char tempStr[32];
-    char humStr[32];
-
-    snprintf(tempStr, sizeof(tempStr), "%.2f C", myData.temperature);
-    snprintf(humStr, sizeof(humStr), "%.2f %%", myData.humidity);
-
-    u8g2.drawStr(20, 30, tempStr);
-    u8g2.drawStr(20, 50, humStr);
-
-    u8g2.sendBuffer();
+int32_t getWiFiChannel(const char *ssid) {
+  if (int32_t n = WiFi.scanNetworks()) {
+      for (uint8_t i=0; i<n; i++) {
+          if (!strcmp(ssid, WiFi.SSID(i).c_str())) {
+              return WiFi.channel(i);
+          }
+      }
+  }
+  return 0;
 }
 
-void debugPrintData() {
-    Serial.print("Temperature: ");
-    Serial.print(myData.temperature);
-    Serial.print(" C, Humidity: ");
-    Serial.print(myData.humidity);
-    Serial.println(" %");
+float readSHT31Temperature() {
+  float t = sht31.readTemperature();
+  if (isnan(t)) {    
+    Serial.println("Failed to read from SHT31 sensor!");
+    return 0;
+  }
+  else {
+    Serial.println(t);
+    return t;
+  }
 }
 
-// Callback function to handle received data
-void OnDataRecv(const esp_now_recv_info *info, const uint8_t *incomingData, int len) {
-    if (memcmp(info->src_addr, mattressAddress, 6) == 0) {
-        int movementStatus = incomingData[0];
-        Serial.print("Received from mattress: ");
-        if (movementStatus == 1) {
-            Serial.println("Movement started");
-            digitalWrite(ledPin, HIGH);  // Turn on LED
-            u8g2.clearBuffer();
-            u8g2.setFont(u8g2_font_ncenB08_tr);
-            u8g2.drawStr(10, 30, "Movement started");
-            u8g2.sendBuffer();
-        } else if (movementStatus == 0) {
-            Serial.println("Movement stopped");
-            digitalWrite(ledPin, LOW);   // Turn off LED
-            u8g2.clearBuffer();
-            u8g2.setFont(u8g2_font_ncenB08_tr);
-            u8g2.drawStr(10, 30, "Movement stopped");
-            u8g2.sendBuffer();
-        }
-        
-        displayMovement = true;
-        movementDisplayTime = millis();
-
-        // Upload movement status to ThingSpeak
-        ThingSpeak.setField(1, myData.temperature);
-        ThingSpeak.setField(2, myData.humidity);
-        ThingSpeak.setField(3, movementStatus);
-        if (ThingSpeak.writeFields(channelID, apiKey)) {
-            Serial.println("Data successfully sent to ThingSpeak.");
-        } else {
-            Serial.println("Failed to send data to ThingSpeak.");
-        }
-
-    } else if (memcmp(info->src_addr, bearAddress, 6) == 0) {
-        memcpy(&myData, incomingData, sizeof(myData));
-        Serial.println("Received from bear:");
-        debugPrintData();  // Print data to Serial Monitor for debugging
-        displayTempHumidity();
-    }
+float readSHT31Humidity() {
+  float h = sht31.readHumidity();
+  if (isnan(h)) {
+    Serial.println("Failed to read from SHT31 sensor!");
+    return 0;
+  }
+  else {
+    Serial.println(h);
+    return h;
+  }
 }
 
+// callback when data is sent
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+  Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+}
+ 
 void setup() {
-    Serial.begin(115200);
-    u8g2.begin();
-    pinMode(ledPin, OUTPUT);
-    digitalWrite(ledPin, LOW);
+  //Init Serial Monitor
+  Serial.begin(115200);
 
-    // Connect to WiFi
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(1000);
-        Serial.print(".");
-    }
-    Serial.println("Connected to WiFi");
+  if (!sht31.begin(SHT31_ADDR)) {
+    Serial.println("Couldn't find SHT31 sensor");
+    while (1) delay(1);
+  }
+ 
+  // Set device as a Wi-Fi Station and set channel
+  WiFi.mode(WIFI_STA);
 
-    ThingSpeak.begin(client);  // Initialize ThingSpeak with WiFiClient
+  int32_t channel = getWiFiChannel(WIFI_SSID);
 
-    WiFi.mode(WIFI_STA);
-    if (esp_now_init() != ESP_OK) {
-        Serial.println("Error initializing ESP-NOW");
-        return;
-    } else {
-        Serial.println("ESP-NOW initialized");
-    }
+  WiFi.printDiag(Serial); // Uncomment to verify channel number before
+  esp_wifi_set_promiscuous(true);
+  esp_wifi_set_channel(channel, WIFI_SECOND_CHAN_NONE);
+  esp_wifi_set_promiscuous(false);
+  WiFi.printDiag(Serial); // Uncomment to verify channel change after
 
-    esp_now_register_recv_cb(OnDataRecv);
-    
-    // Add Bear as peer
-    esp_now_peer_info_t bearPeerInfo = {};
-    memcpy(bearPeerInfo.peer_addr, bearAddress, 6);
-    bearPeerInfo.channel = 0;  
-    bearPeerInfo.encrypt = false;
-    if (esp_now_add_peer(&bearPeerInfo) != ESP_OK) {
-        Serial.println("Failed to add Bear peer");
-    } else {
-        Serial.println("Bear peer added");
-    }
-    
-    // Add Mattress as peer
-    esp_now_peer_info_t mattressPeerInfo = {};
-    memcpy(mattressPeerInfo.peer_addr, mattressAddress, 6);
-    mattressPeerInfo.channel = 0;  
-    mattressPeerInfo.encrypt = false;
-    if (esp_now_add_peer(&mattressPeerInfo) != ESP_OK) {
-        Serial.println("Failed to add Mattress peer");
-    } else {
-        Serial.println("Mattress peer added");
-    }
-    
-    // Initial message
-    u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_ncenB08_tr);
-    u8g2.drawStr(10, 30, "Waiting for messages...");
-    u8g2.sendBuffer();
+  // Init ESP-NOW
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
+
+  // Once ESPNow is successfully Init, we will register for Send CB to
+  // get the status of Trasnmitted packet
+  esp_now_register_send_cb(OnDataSent);
+  
+  // Register peer
+  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+  peerInfo.encrypt = false;
+  
+  // Add peer        
+  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+    Serial.println("Failed to add peer");
+    return;
+  }
 }
-
+ 
 void loop() {
-    unsigned long currentTime = millis();
-    
-    if (displayMovement && (currentTime - movementDisplayTime >= messageDisplayDuration)) {
-        displayMovement = false;
-        displayTempHumidity();
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    // Save the last time a new reading was published
+    previousMillis = currentMillis;
+    //Set values to send
+    myData.id = BOARD_ID;
+    myData.temp = readSHT31Temperature();
+    myData.hum = readSHT31Humidity();
+    myData.readingId = readingId++;
+     
+    //Send message via ESP-NOW
+    esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+    if (result == ESP_OK) {
+      Serial.println("Sent with success");
     }
-
-    if (!displayMovement && (currentTime - lastUpdateTime >= 300000)) {
-        lastUpdateTime = currentTime;
-        displayTempHumidity();
-        // Upload data to ThingSpeak every 5 minutes
-        ThingSpeak.setField(1, myData.temperature);
-        ThingSpeak.setField(2, myData.humidity);
-        ThingSpeak.setField(3, 0);  // Sending 0 for movement status
-        if (ThingSpeak.writeFields(channelID, apiKey)) {
-            Serial.println("Data successfully sent to ThingSpeak.");
-        } else {
-            Serial.println("Failed to send data to ThingSpeak.");
-        }
+    else {
+      Serial.println("Error sending the data");
     }
+  }
 }
