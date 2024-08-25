@@ -58,9 +58,7 @@ connect green LED's short leg to a 330 ohm resistor.
 connect the second leg of the resistor to ESP32 GND.
 
 Detailed Diagrams:
-For detailed diagrams images, visit the Images Repository. 
-Pictures/Circuit_diagrams_Pictures
-[Images Repository](Pictures/Circuit_diagrams_Pictures)
+For detailed diagrams images, visit the [Images Repository](Pictures/Circuit_diagrams_Pictures).
 
 #### Uploading Code to ESP32 Units
 **Important note** - Library Installation: If the Arduino IDE alerts you that you are missing libraries while uploading code, follow these steps to install them:
