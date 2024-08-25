@@ -43,7 +43,7 @@ This project involves developing a baby monitoring system using Arduino, various
 2. Open the Arduino IDE.
 3. Select the appropriate board (FreeBeetle-ESP32) from the Tools > Board menu.
 4. Select the correct port from the Tools > Port menu.
-5. Open the sketch file named MAC_Address.ino.
+5. Open the sketch file named [MAC_Address.ino](Codes/Mattress _with_WiFi.ino).
 6. Copy and paste it into the Arduino IDE.
 7. Click the Upload button to upload the code to the ESP32.
 8. open the Serial Monitor from the Tools > Serial Monitor menu.
@@ -99,7 +99,7 @@ For detailed diagrams images, visit the [Images Repository](Pictures/Circuit_dia
 - ESP32 Unit 1 (Bear):
 Code Purpose: Handles the humidity and temperature sensor (SHT31).
 Upload Instructions:
-1. Open the sketch file named Bear.ino.
+1. Open the sketch file named [Bear.ino](Codes/Bear.ino).
 2. Copy and paste in Arduino IDE.
 3. Change MAC Address to Parents MAC Address in line 9.
 4. Change SSID to your WiFi name in line 12.
@@ -111,7 +111,7 @@ Upload Instructions:
 - ESP32 Unit 2 (Mattress):
 Code Purpose: Manages the gyroscope (MPU6050).
 Upload Instructions:
-1. Open the sketch file named Mattress.ino.
+1. Open the sketch file named [Mattress.ino](Codes/Mattress.ino).
 2. Copy and paste in Arduino IDE.
 3. Change MAC Address to Parents MAC Address in line 17.
 4. Change SSID to your WiFi name in line 10.
@@ -123,7 +123,7 @@ Upload Instructions:
 - ESP32 Unit 3 (Parents):
 Code Purpose: Controls the LED screen (OLED) and handles data display. Manages visual output and user interface.
 Upload Instructions:
-1. Open the sketch file for named Parents.ino.
+1. Open the sketch file for named [Parents.ino](Codes/Parents.ino).
 2. copy and paste in Arduino IDE.
 3. Change MAC Address to Bear's MAC Address in line 10.
 4. Change MAC Address to Mattress's MAC Address in line 11.
@@ -132,8 +132,8 @@ Upload Instructions:
 - ESP32 CAM:
 Code Purpose: Streams video from the baby’s room. Manages the camera and SD card operations.
 Upload Instructions:
-1. Save the sketch files from the ESP32_CAM_Codes folder into one folder.
-2. Open the sketch files from this folder.
+1. Save the sketch files from the [ESP32_CAM_Codes](Codes/ESP32_CAM_Codes) folder into one folder.
+2. Open the [ESP32_CAM.ino](Codes/ESP32_CAM_Codes/ESP32_CAM.ino) file from this folder.
 3. Select the appropriate board (ESP32 DEV module) from the Tools > Board menu.
 4. select the appropriate partition scheme (minimal SPIFFS) from the Tools menu.
 5. enable PSRAM (minimal SPIFFS) from the Tools menu
