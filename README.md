@@ -7,22 +7,20 @@ Arduino Labratory Final project, An home made baby sensor, using esp32, esp32 ca
 This project involves creating a baby sensor system using Arduino, various sensors, and an ESP32 microcontroller. The sensor system monitors the baby’s environment and alerts caregivers if certain thresholds are exceeded, ensuring the baby’s safety and comfort.
 
 ## Features
-- Environmental Monitoring: Monitors temperature and humidity around the baby's bed to ensure a comfortable environment. Alerts caregivers if conditions deviate from safe ranges.
+- Environmental Monitoring: Monitors temperature and humidity around the baby's bed to ensure a comfortable environment.
 - Video Streaming: Streams live video from the baby's room using the ESP32 CAM, allowing real-time monitoring of the baby's activities.
-- Movement Detection: Captures images and detects movement within the baby's bed area using the ESP32 CAM, providing additional visibility and monitoring capabilities.
-- Real-Time Alerts: Provides visual alerts through LED lights if critical conditions are detected, such as high temperature or unusual movement.
+- Movement Detection: detects baby's movement using gyroscope providing additional monitoring capabilities.
 - Data Visualization: Logs and visualizes environmental data using ThingSpeak, offering a dashboard for tracking and analyzing the baby's environment over time.
 
 ## Components
 - ESP32 (3 units): Microcontrollers used for processing and communication. They handle data from sensors and manage interactions between components.
-- ESP32 CAM: A compact development board with an integrated camera and SD card slot. The camera is mounted directly on top of the ESP32 board, eliminating the need for additional wiring. It’s used for capturing pictures and streaming video.
+- ESP32 CAM: A compact development board with an integrated camera and SD card slot. The camera is mounted directly on top of the ESP32 board, eliminating the need for additional wiring. It’s used for streaming video.
 - Humidity and Temperature Sensor (SHT31): Measures ambient temperature and humidity, providing real-time environmental data to ensure the baby’s comfort.
 - Gyroscope (MPU6050): Detects orientation and motion, helping to monitor the baby's movements and detect any unusual activity.
-- LED Screen: Displays real-time data, alerts, or status messages. Useful for visual feedback and monitoring system status at a glance.
-- Red LED Light: Used as a visual alert for critical warnings.
-- Green LED Light: Indicates normal operation or safe conditions. Provides a visual confirmation of system status.
+- LED Screen: Displays real-time data and status messages. Useful for visual feedback and monitoring system status at a glance.
+- Green LED Light: Indicates movements in the baby's bed.
 - Batteries (2 units): Power source for two of the ESP32 units, ensuring their operation and portability.
-- 330 Ohm Resistors (2 units): Used to limit current and protect components, such as LEDs, from excessive current.
+- 330 Ohm Resistor: Used to limit current and protect components, such as LEDs, from excessive current.
 
 ## Software and Services
 - Arduino IDE: Software development environment used for writing and uploading code to the ESP32 boards. It includes libraries and tools for interfacing with hardware components.
@@ -35,29 +33,29 @@ This project involves creating a baby sensor system using Arduino, various senso
 - ESP32 Unit 1 (Bear):
 Humidity and Temperature Sensor (SHT31):
 Wiring Instructions:
-* Connect the sensor’s VCC to ESP32 3V3.
-* Connect the sensor’s GND to ESP32 GND.
-* Connect the sensor’s SDA to ESP32 GPIO 21.
-* Connect the sensor’s SCL to ESP32 GPIO 22.
+Connect the sensor’s VCC to ESP32 3V3.
+Connect the sensor’s GND to ESP32 GND.
+Connect the sensor’s SDA to ESP32 GPIO 21.
+Connect the sensor’s SCL to ESP32 GPIO 22.
 
 - ESP32 Unit 2 (Mattress):
 Gyroscope (MPU6050):
 Wiring Instructions:
-* Connect the gyroscope’s VCC to ESP32 3V3.
-* Connect the gyroscope’s GND to ESP32 GND.
-* Connect the gyroscope’s SDA to ESP32 GPIO 21.
-* Connect the gyroscope’s SCL to ESP32 GPIO 22.
+Connect the gyroscope’s VCC to ESP32 3V3.
+Connect the gyroscope’s GND to ESP32 GND.
+Connect the gyroscope’s SDA to ESP32 GPIO 21.
+Connect the gyroscope’s SCL to ESP32 GPIO 22.
+
 - ESP32 Unit 3 (Parents):
-LED Screen (OLED), red and green LED lights: 
+LED Screen (OLED) and green LED lights: 
 Wiring Instructions:
-* Connect the OLED’s VCC to ESP32 3V3.
-* Connect the OLED’s GND to ESP32 GND.
-* Connect the OLED’s SCK to ESP32 SCK.
-* Connect the OLED’s SDA to ESP32 SDA.
-* connect Red LED's short leg to A4.**?**
-* connect green LED's short leg to D10.**?**
-* connect each LED's long leg to a 330 ohm resistor. 
-* connect both leg to ESP32 GND.**?**
+Connect the OLED’s VCC to ESP32 3V3.
+Connect the OLED’s GND to ESP32 GND.
+Connect the OLED’s SCK to ESP32 SCK.
+Connect the OLED’s SDA to ESP32 SDA.
+connect green LED's long leg to A4.
+connect green LED's short leg to a 330 ohm resistor. 
+connect the second leg of the resistor to ESP32 GND.
 
 Detailed Diagrams:
 For detailed diagrams images, visit the Images Repository.  **Add link**
@@ -93,16 +91,18 @@ Upload Instructions:
 * Click the Upload button to upload the code to the ESP32 Unit 3 (Parent).
 
 - ESP32 CAM:
-Code Purpose: Captures images and streams video from the baby’s room. Manages the camera and SD card operations.
+Code Purpose: Streams video from the baby’s room. Manages the camera and SD card operations.
 Upload Instructions:
-*Select the appropriate board (AI Thinker ESP32-CAM) from the Tools > Board menu.
-*Select the correct port from the Tools > Port menu.
-*Save the sketch files from the ESP32_CAM_Codes folder into one folder.
-*Open the sketch files from this folder.
-*Click the Upload button to upload the code to the ESP32 CAM.
-*Open the Serial Monitor from the Tools > Serial Monitor menu.
-*Press the RST button on the ESP32 CAM to reset the board.
-*Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
+Save the sketch files from the ESP32_CAM_Codes folder into one folder.
+Open the sketch files from this folder.
+Select the appropriate board (ESP32 DEV module) from the Tools > Board menu.
+select the appropriate partition scheme (minimal SPIFFS) from the Tools menu.
+enable PSRAM (minimal SPIFFS) from the Tools menu
+Select the correct port from the Tools > Port menu.
+Click the Upload button to upload the code to the ESP32 CAM.
+Open the Serial Monitor from the Tools > Serial Monitor menu.
+Press the RST button on the ESP32 CAM to reset the board.
+Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
 
 **--------------------------------------------got here**
 Install the required libraries for Arduino and ESP32 from the Arduino Library Manager.
