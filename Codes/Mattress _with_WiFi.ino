@@ -4,7 +4,7 @@
 #include <HTTPClient.h>
 
 #define MPU6050_ADDRESS 0x68
-#define TWO_MINUTES 120000 // 2 minutes in milliseconds
+#define ONE_HOUR 60*60*1000 // 1 hour in milliseconds
 
 // WiFi credentials
 const char* ssid = "Kim";
@@ -20,7 +20,7 @@ uint8_t parentAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4D, 0x0C}; // MAC address o
 bool movementDetected = false;
 int consecutiveMovementCount = 0;
 int consecutiveStopCount = 0;
-int HM = 0; // Variable to count movement started messages within a 2-minute period
+int HM = 0; // Variable to count movement started messages within a 1 hour period
 unsigned long lastResetTime = 0; // Time of the last reset
 
 void setup() {
@@ -152,9 +152,9 @@ void loop() {
     }
   }
 
-  // Reset HM every 2 minutes
+  // Reset HM every 1 hour
   unsigned long currentMillis = millis();
-  if (currentMillis - lastResetTime >= TWO_MINUTES) {
+  if (currentMillis - lastResetTime >= ONE_HOUR) {
     Serial.print("movements count before reset is ");
     Serial.println(HM);
 
