@@ -24,7 +24,7 @@ This project involves creating a baby sensor system using Arduino, various senso
 
 ## Software and Services
 - Arduino IDE: Software development environment used for writing and uploading code to the ESP32 boards. It includes libraries and tools for interfacing with hardware components.
-- ThingSpeak: A cloud-based platform for data logging and visualization. Used to collect and display data from your sensors. Set up an account and configure your channel to integrate with your project.
+- ThingSpeak: A cloud-based IoT platform for data logging and visualization. Used to collect and display data from your sensors. Set up an account and configure your channel to integrate with your project.
 
 ## Instructions
 ### Setup
@@ -52,12 +52,13 @@ This project involves creating a baby sensor system using Arduino, various senso
 
 #### Connecting ESP32 to Sensors
 - ESP32 Unit 1 (Bear):
-Humidity and Temperature Sensor (SHT31):
+Humidity and Temperature Sensor (SHT31) and a Battery:
 Wiring Instructions:
 1. Connect the sensor’s VCC to ESP32 3V3.
 2. Connect the sensor’s GND to ESP32 GND.
 3. Connect the sensor’s SDA to ESP32 GPIO 21.
 4. Connect the sensor’s SCL to ESP32 GPIO 22.
+5. connect the esp32 to a battery. **explain when you know**
 
 - ESP32 Unit 2 (Mattress):
 Gyroscope (MPU6050):
@@ -66,6 +67,7 @@ Wiring Instructions:
 2. Connect the gyroscope’s GND to ESP32 GND.
 3. Connect the gyroscope’s SDA to ESP32 GPIO 21.
 4. Connect the gyroscope’s SCL to ESP32 GPIO 22.
+5. connect the esp32 to a battery. **explain when you know**
 
 - ESP32 Unit 3 (Parents):
 LED Screen (OLED) and green LED lights: 
@@ -140,28 +142,12 @@ Upload Instructions:
 8. Open the Serial Monitor from the Tools > Serial Monitor menu.
 9. Press the RST button on the ESP32 CAM to reset the board.
 10. Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
+11. Press start video button.
 
-**--------------------------------------------got here**
-Follow the calibration instructions specific to each sensor.
-Thingspeak Configuration
-
-Create an account on Thingspeak.
-Set up a channel for data logging.
-Update the API keys and channel ID in the config.h file.
-Usage
-Power on the system and ensure all sensors are properly connected.
-Monitor the baby’s environment through the Thingspeak dashboard.
-Alerts will be triggered and sent if parameters exceed the predefined thresholds.
-Troubleshooting
-Sensor not responding: Check connections and calibration.
-No data on Thingspeak: Verify API keys and network connection.
-Contributing
-Feel free to fork the repository and submit pull requests. Any improvements or bug fixes are welcome!
-
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-Acknowledgements
-Arduino - Open-source electronics platform.
-ESP32 - Low-power microcontroller.
-Thingspeak - IoT platform for data logging and visualization.
+### Using the Baby's Sensor
+Few last steps and the baby sensor is ready for use:
+- Plug the camera to the socket and Put it in a position that the baby's bed will be visible.
+- Put the Bear esp32 next to the Baby's bed.
+- Put the Mattress esp32 under the mattress.
+- Plug the Parents esp to the socket where it's visible for you.
+- use your phone or computer to look at the camera and ThingSpeak figures to monitor your precious baby while he/she is sleeping.
