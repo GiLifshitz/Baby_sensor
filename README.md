@@ -1,10 +1,10 @@
 # Baby_sensor
-Arduino Labratory Final project, An home made baby sensor, using esp32, esp32 cam more.
+Arduino Labratory Final project: A home made baby sensor, using esp32, esp32 cam more.
 
 ![Baby Crying](https://media.giphy.com/media/2Qs2hKWMvEzdu/giphy.gif)
 
 # Overview
-This project involves creating a baby sensor system using Arduino, various sensors, and an ESP32 microcontroller. The sensor system monitors the baby’s environment and alerts caregivers if certain thresholds are exceeded, ensuring the baby’s safety and comfort.
+This project involves developing a baby monitoring system using Arduino, various sensors, ESP32 microcontrollers, and an ESP32-CAM. The system monitors the baby's environment, ensuring their safety and comfort.
 
 ## Features
 - Environmental Monitoring: Monitors temperature and humidity around the baby's bed to ensure a comfortable environment.
@@ -29,25 +29,25 @@ This project involves creating a baby sensor system using Arduino, various senso
 ## Instructions
 ### Setup
 
-#### Adjust ThingSpeak
-1. Create an account on Thingspeak.
+#### Adjust [ThingSpeak](https://thingspeak.com/)
+1. Create an account on ThingSpeak.
 2. Set up a channel for data logging.
 3. Set up 3 fields in the channel:
    - 1, for temperature
    - 2, for humidity
    - 3, for movement 
-5. Note yourself the API keys and channel ID.
+5. Note down the API keys and channel ID.
 
 #### Find ESP32 MAC Addresses
-1. One by one connect each unit to the computer.
+1. Connect each unit to the computer one by one.
 2. Open the Arduino IDE.
 3. Select the appropriate board (FreeBeetle-ESP32) from the Tools > Board menu.
 4. Select the correct port from the Tools > Port menu.
 5. Open the sketch file named MAC_Address.ino.
-6. copy and paste in Arduino IDE.
+6. Copy and paste it into the Arduino IDE.
 7. Click the Upload button to upload the code to the ESP32.
 8. open the Serial Monitor from the Tools > Serial Monitor menu.
-9. Press the RST button on the ESP32 to reset the board.
+9. Press RST button on the ESP32 to reset the board.
 10. Copy the MAC address displayed in the Serial Monitor and Save it for later.
 
 #### Connecting ESP32 to Sensors
