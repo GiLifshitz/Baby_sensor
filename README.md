@@ -24,10 +24,31 @@ This project involves creating a baby sensor system using Arduino, various senso
 
 ## Software and Services
 - Arduino IDE: Software development environment used for writing and uploading code to the ESP32 boards. It includes libraries and tools for interfacing with hardware components.
-- ThingSpeak: A cloud-based platform for IoT data logging and visualization. Used to collect and display data from your sensors. Set up an account and configure your channel to integrate with your project.
+- ThingSpeak: A cloud-based platform for data logging and visualization. Used to collect and display data from your sensors. Set up an account and configure your channel to integrate with your project.
 
 ## Instructions
 ### Setup
+
+#### Adjust ThingSpeak
+1. Create an account on Thingspeak.
+2. Set up a channel for data logging.
+3. Set up 3 fields in the channel:
+   - 1, for temperature
+   - 2, for humidity
+   - 3, for movement 
+5. Note yourself the API keys and channel ID.
+
+#### Find ESP32 MAC Addresses
+1. One by one connect each unit to the computer.
+2. Open the Arduino IDE.
+3. Select the appropriate board (FreeBeetle-ESP32) from the Tools > Board menu.
+4. Select the correct port from the Tools > Port menu.
+5. Open the sketch file named MAC_Address.ino.
+6. copy and paste in Arduino IDE.
+7. Click the Upload button to upload the code to the ESP32.
+8. open the Serial Monitor from the Tools > Serial Monitor menu.
+9. Press the RST button on the ESP32 to reset the board.
+10. Copy the MAC address displayed in the Serial Monitor and Save it for later.
 
 #### Connecting ESP32 to Sensors
 - ESP32 Unit 1 (Bear):
@@ -69,26 +90,42 @@ For detailed diagrams images, visit the [Images Repository](Pictures/Circuit_dia
 
 - Ensure that you have the Arduino IDE set up and configured for ESP32 development. Follow these steps to upload the correct code to each ESP32 unit:
 1. Open the Arduino IDE.
-2. Select the appropriate board (FreeBeetle-ESP32) from the Tools > Board menu.
-3. Select the correct port from the Tools > Port menu.
+2. Connect the relevant unit to the computer.
+3. Select the appropriate board (FreeBeetle-ESP32) from the Tools > Board menu.
+4. Select the correct port from the Tools > Port menu.
 
 - ESP32 Unit 1 (Bear):
 Code Purpose: Handles the humidity and temperature sensor (SHT31).
 Upload Instructions:
 1. Open the sketch file named Bear.ino.
-2. Click the Upload button to upload the code to the ESP32 Unit 1 (Bear).
+2. Copy and paste in Arduino IDE.
+3. Change MAC Address to Parents MAC Address in line 9.
+4. Change SSID to your WiFi name in line 12.
+5. Change Password to your WiFi password in line 13.
+6. Change ChannelNumber to your ThingSpeak ChannelNumber in line 14.
+7. change apikey to your ThingSpeak apikey in line 15.
+8. Click the Upload button to upload the code to the ESP32 Unit 1 (Bear).
 
 - ESP32 Unit 2 (Mattress):
 Code Purpose: Manages the gyroscope (MPU6050).
 Upload Instructions:
-* Open the sketch file named Mattress.ino.
-* Click the Upload button to upload the code to the ESP32 Unit 2 (Mattress).
+1. Open the sketch file named Mattress.ino.
+2. Copy and paste in Arduino IDE.
+3. Change MAC Address to Parents MAC Address in line 17.
+4. Change SSID to your WiFi name in line 10.
+5. Change Password to your WiFi password in line 11.
+6. Change ChannelNumber to your ThingSpeak ChannelNumber in line 14.
+7. change apikey to your ThingSpeak apikey in line 15.
+8. Click the Upload button to upload the code to the ESP32 Unit 2 (Mattress).
 
 - ESP32 Unit 3 (Parents):
 Code Purpose: Controls the LED screen (OLED) and handles data display. Manages visual output and user interface.
 Upload Instructions:
 1. Open the sketch file for named Parents.ino.
-2. Click the Upload button to upload the code to the ESP32 Unit 3 (Parent).
+2. copy and paste in Arduino IDE.
+3. Change MAC Address to Bear's MAC Address in line 10.
+4. Change MAC Address to Mattress's MAC Address in line 11.
+5. Click the Upload button to upload the code to the ESP32 Unit 3 (Parent).
 
 - ESP32 CAM:
 Code Purpose: Streams video from the baby’s room. Manages the camera and SD card operations.
@@ -105,16 +142,6 @@ Upload Instructions:
 10. Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
 
 **--------------------------------------------got here**
-Install the required libraries for Arduino and ESP32 from the Arduino Library Manager.
-Example: Adafruit DHT sensor library for temperature and humidity sensors. 
-Upload Code
-
-Open the baby_sensor.ino file in the Arduino IDE.
-Select the appropriate board and port.
-Upload the code to the Arduino and ESP32.
-Configuration
-Sensor Calibration
-
 Follow the calibration instructions specific to each sensor.
 Thingspeak Configuration
 
