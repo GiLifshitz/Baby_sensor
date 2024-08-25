@@ -27,12 +27,12 @@ struct_message myData;
 // Create an instance of the SHT31 sensor
 Adafruit_SHT31 sht31 = Adafruit_SHT31();
 
-// EEPROM address for the cycle flag
-const int flagAddress = 0; 
+// EEPROM address for the variable X
+const int xAddress = 0; 
 
 void setup() {
     Serial.begin(115200);
-    EEPROM.begin(1); // Initialize EEPROM with 1 byte size
+    EEPROM.begin(4); // Initialize EEPROM with space for float (4 bytes)
 
     // Initialize the SHT31 sensor
     if (!sht31.begin(0x44)) {   // Set to 0x45 for alternate I2C address
@@ -40,25 +40,44 @@ void setup() {
         while (1) delay(1);
     }
 
-    // Read the cycle flag from EEPROM
-    int cycleFlag = EEPROM.read(flagAddress);
+    // Read the value of X from EEPROM
+    float X = 0;
+    EEPROM.get(xAddress, X);
 
-    // If cycleFlag is 0, send to ThingSpeak; if 1, send to the parent ESP32
-    if (cycleFlag == 0) {
-        sendDataToThingSpeak();
-        cycleFlag = 1; // Switch to the next cycle
-    } else {
-        initEspNow();
-        sendDataToParent();
-        cycleFlag = 0; // Switch back to ThingSpeak cycle
+    // Check if X is NaN, and if so, set it to 0
+    if (isnan(X)) {
+        X = 0;
+        EEPROM.put(xAddress, X);
+        EEPROM.commit();
     }
 
-    // Store the updated flag back to EEPROM
-    EEPROM.write(flagAddress, cycleFlag);
-    EEPROM.commit();
+    Serial.print("X value on wake up: ");
+    Serial.println(X);
 
-    // Enter deep sleep for 30 seconds
-    enterDeepSleep();
+    // Step 2: Read temperature and humidity
+    readSensorData();
+
+    if (X == 0) {
+        // Step 3: Send data via ESP-NOW
+        sendDataToParent();
+        // Update X to 1
+        X = 1;
+        EEPROM.put(xAddress, X);
+        EEPROM.commit();
+
+        // Step 4: Enter deep sleep for 30 seconds
+        deepSleepWithTime(30);
+    } else if (X == 1) {
+        // Step 5: Send data to ThingSpeak
+        sendDataToThingSpeak();
+        // Update X to 0
+        X = 0;
+        EEPROM.put(xAddress, X);
+        EEPROM.commit();
+
+        // Step 8: Enter deep sleep for 9 minutes and 28 seconds
+        deepSleepWithTime(568);  // 9 * 60 + 28 = 568 seconds
+    }
 }
 
 void loop() {
@@ -103,9 +122,6 @@ void sendDataToThingSpeak() {
     // Initialize ThingSpeak
     ThingSpeak.begin(client);
 
-    // Read sensor data
-    readSensorData();
-
     // Set the fields and update ThingSpeak
     ThingSpeak.setField(1, myData.temperature);
     ThingSpeak.setField(2, myData.humidity);
@@ -122,8 +138,7 @@ void sendDataToThingSpeak() {
 }
 
 void sendDataToParent() {
-    // Read sensor data
-    readSensorData();
+    initEspNow();  // Initialize ESP-NOW
 
     // Send the temperature and humidity data to the Parent device via ESP-NOW
     esp_err_t result = esp_now_send(parentAddress, (uint8_t *)&myData, sizeof(myData));
@@ -133,14 +148,17 @@ void sendDataToParent() {
         Serial.println("Error sending data");
     }
 
-    // Disable ESP-NOW before entering deep sleep
+    // Disable ESP-NOW after sending data
     esp_now_deinit();
 }
 
 void readSensorData() {
     float t = sht31.readTemperature();
     float h = sht31.readHumidity();
-
+    Serial.print("h: ");
+    Serial.println(h);
+    Serial.print("t: ");
+    Serial.println(t);
     // Check if the readings are valid
     if (!isnan(t) && !isnan(h)) {
         myData.temperature = t;
@@ -150,9 +168,8 @@ void readSensorData() {
     }
 }
 
-void enterDeepSleep() {
-    Serial.println("Entering deep sleep...");
-    // Set the timer to wake up after 30 seconds
-    esp_sleep_enable_timer_wakeup(30 * 1000000); // 30 seconds
+void deepSleepWithTime(int seconds) {
+    Serial.printf("Entering deep sleep for %d seconds...\n", seconds);
+    esp_sleep_enable_timer_wakeup(seconds * 1000000); // Deep sleep for specified seconds
     esp_deep_sleep_start();
 }
