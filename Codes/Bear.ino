@@ -78,5 +78,5 @@ void loop() {
         Serial.println("Error sending data");
     }
 
-    delay(30000); // Send data every 30 seconds
+    delay(30*1000); // Send data every 30 seconds
 }
