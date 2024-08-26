@@ -51,7 +51,8 @@ This project involves developing a baby monitoring system using Arduino, various
 10. Copy the MAC address displayed in the Serial Monitor and Save it for later.
 
 #### Connecting ESP32 to Sensors
-- ESP32 Unit 1 (Bear):
+
+***- ESP32 Unit 1 (Bear):***
 Humidity and Temperature Sensor (SHT31) and a Battery:
 Wiring Instructions:
 1. Connect the sensor’s VCC to ESP32 3V3.
@@ -62,7 +63,8 @@ Wiring Instructions:
 6. Connect the middle leg of the SPDT slide switch to the battery’s positive terminal.
 7. Connect the ESP32’s negative pin to the battery’s negative terminal.
 
-- ESP32 Unit 2 (Mattress):
+
+***- ESP32 Unit 2 (Mattress):***
 Gyroscope (MPU6050):
 Wiring Instructions:
 1. Connect the gyroscope’s VCC to ESP32 3V3.
@@ -73,7 +75,8 @@ Wiring Instructions:
 6. Connect the middle leg of the SPDT slide switch to the battery’s positive terminal.
 7. Connect the ESP32’s negative pin to the battery’s negative terminal.
 
-- ESP32 Unit 3 (Parents):
+
+***- ESP32 Unit 3 (Parents):***
 LED Screen (OLED) and green LED lights: 
 Wiring Instructions:
 1. Connect the OLED’s VCC to ESP32 3V3.
@@ -87,7 +90,7 @@ Wiring Instructions:
 9. Connect the middle leg of the SPDT slide switch to the battery’s positive terminal.
 10. Connect the ESP32’s negative pin to the battery’s negative terminal.
 
-Detailed Diagrams:
+***Detailed Diagrams:***
 For detailed diagrams images, visit the [Images Repository](Pictures/Circuit_diagrams_Pictures).
 
 #### Uploading Code to ESP32 Units
@@ -103,7 +106,7 @@ For detailed diagrams images, visit the [Images Repository](Pictures/Circuit_dia
 3. Select the appropriate board (FreeBeetle-ESP32) from the Tools > Board menu.
 4. Select the correct port from the Tools > Port menu.
 
-- ESP32 Unit 1 (Bear):
+***- ESP32 Unit 1 (Bear):***
 Code Purpose: Handles the humidity and temperature sensor (SHT31).
 Upload Instructions:
 1. Open the sketch file named [Bear.ino](Codes/Bear.ino).
@@ -115,7 +118,7 @@ Upload Instructions:
 7. change apikey to your ThingSpeak apikey in line 15.
 8. Click the Upload button to upload the code to the ESP32 Unit 1 (Bear).
 
-- ESP32 Unit 2 (Mattress):
+***- ESP32 Unit 2 (Mattress):***
 Code Purpose: Manages the gyroscope (MPU6050).
 Upload Instructions:
 1. Open the sketch file named [Mattress.ino](Codes/Mattress.ino).
@@ -127,7 +130,7 @@ Upload Instructions:
 7. change apikey to your ThingSpeak apikey in line 15.
 8. Click the Upload button to upload the code to the ESP32 Unit 2 (Mattress).
 
-- ESP32 Unit 3 (Parents):
+***- ESP32 Unit 3 (Parents):***
 Code Purpose: Controls the LED screen (OLED) and handles data display. Manages visual output and user interface.
 Upload Instructions:
 1. Open the sketch file for named [Parents.ino](Codes/Parents.ino).
@@ -136,7 +139,7 @@ Upload Instructions:
 4. Change MAC Address to Mattress's MAC Address in line 11.
 5. Click the Upload button to upload the code to the ESP32 Unit 3 (Parent).
 
-- ESP32 CAM:
+***- ESP32 CAM:***
 Code Purpose: Streams video from the baby’s room. Manages the camera and SD card operations.
 Upload Instructions:
 1. Save the sketch files from the [ESP32_CAM_Codes](Codes/ESP32_CAM_Codes) folder into one folder.
@@ -150,6 +153,8 @@ Upload Instructions:
 9. Press the RST button on the ESP32 CAM to reset the board.
 10. Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
 11. Press start video button.
+
+![Baby_Cam](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGs4cHNldTRyaWtoYWl0d213Yno2cDRuY2Zld2I5eXI5NnlyZWx1ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6ZtqJw69RlbU0KuA/giphy.gif)
 
 ### Using the Baby's Sensor
 Few last steps and the baby sensor is ready for use:
