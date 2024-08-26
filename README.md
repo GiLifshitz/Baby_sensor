@@ -144,6 +144,8 @@ Upload Instructions:
 10. Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
 11. Press start video button.
 
+![Baby_Cam](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGs4cHNldTRyaWtoYWl0d213Yno2cDRuY2Zld2I5eXI5NnlyZWx1ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6ZtqJw69RlbU0KuA/giphy.gif)
+
 ### Using the Baby's Sensor
 Few last steps and the baby sensor is ready for use:
 - Plug the camera to the socket and Put it in a position that the baby's bed will be visible.
