@@ -4,80 +4,109 @@
 #include <HTTPClient.h>
 
 #define MPU6050_ADDRESS 0x68
-#define ONE_HOUR 60*60*1000 // 1 hour in milliseconds
+#define ONE_HOUR 2*60*1000 // 1 hour in milliseconds
 
 // WiFi credentials
 const char* ssid = "Kim";
 const char* password = "0526693338";
 
 // ThingSpeak configuration
-const char* apiKey = "O6JD5G6007EWZCIV"; // Your ThingSpeak API key
-const unsigned long channelID = 2607721; // Your ThingSpeak Channel ID
+const char* apiKey = "O6JD5G6007EWZCIV";
+const unsigned long channelID = 2607721;
 
-uint8_t parentAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4D, 0x0C}; // MAC address of the Parent device
+uint8_t parentAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4D, 0x0C};
 
 // State variables
 bool movementDetected = false;
 int consecutiveMovementCount = 0;
 int consecutiveStopCount = 0;
-int HM = 0; // Variable to count movement started messages within a 1 hour period
-unsigned long lastResetTime = 0; // Time of the last reset
+int HM = 0;
+unsigned long lastResetTime = 0;
+bool isESPNowMode = true;
 
 void setup() {
-  // Initialize serial communication
   Serial.begin(115200);
-
-  // Initialize I2C communication for MPU6050
   Wire.begin();
 
-  // Reset MPU6050
-  Wire.beginTransmission(MPU6050_ADDRESS);
-  Wire.write(0x6B);  // Power management register
-  Wire.write(0x80);  // Reset MPU6050
-  Wire.endTransmission(true);
-  delay(100); // Wait for the reset to complete
-
-  // Wake up MPU6050
-  Wire.beginTransmission(MPU6050_ADDRESS);
-  Wire.write(0x6B);  // Power management register
-  Wire.write(0);     // Wake up MPU6050
-  Wire.endTransmission(true);
+  // Initialize MPU6050
+  initMPU6050();
 
   // Initialize ESP-NOW
+  initESPNow();
+
+  lastResetTime = millis();
+}
+
+void initMPU6050() {
+  Wire.beginTransmission(MPU6050_ADDRESS);
+  Wire.write(0x6B);
+  Wire.write(0x80);
+  Wire.endTransmission(true);
+  delay(100);
+
+  Wire.beginTransmission(MPU6050_ADDRESS);
+  Wire.write(0x6B);
+  Wire.write(0);
+  Wire.endTransmission(true);
+}
+
+void initESPNow() {
   WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
+
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
-    while (true); // Halt here if initialization fails
+    ESP.restart();  // Restart the ESP32 if ESP-NOW init fails
+    return;
   }
 
-  // Add peer (Parent device)
   esp_now_peer_info_t peerInfo;
+  memset(&peerInfo, 0, sizeof(peerInfo));
   memcpy(peerInfo.peer_addr, parentAddress, 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
 
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add peer");
-    while (true); // Halt here if adding peer fails
+    ESP.restart();  // Restart the ESP32 if adding peer fails
+    return;
   }
 
-  // Initialize last reset time
-  lastResetTime = millis();
+  Serial.println("ESP-NOW initialized and peer added successfully");
+}
+
+void switchToWiFi() {
+  if (isESPNowMode) {
+    esp_now_deinit();
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+    }
+    Serial.println("Connected to WiFi");
+    isESPNowMode = false;
+  }
+}
+
+void switchToESPNow() {
+  if (!isESPNowMode) {
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_STA);
+    initESPNow();
+    isESPNowMode = true;
+  }
 }
 
 void uploadToThingSpeak() {
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(".");
-  }
-  Serial.println("Connected to WiFi");
+  switchToWiFi();
 
   HTTPClient http;
   String url = "https://api.thingspeak.com/update?api_key=" + String(apiKey) + "&field3=" + String(HM);
   
-  http.begin(url); // Start the connection
-  int httpCode = http.GET(); // Make the GET request
+  http.begin(url);
+  int httpCode = http.GET();
 
   if (httpCode == 200) {
     Serial.println("Data uploaded successfully");
@@ -86,85 +115,75 @@ void uploadToThingSpeak() {
     Serial.println(httpCode);
   }
 
-  http.end(); // End the connection
-  WiFi.disconnect();
-  Serial.println("Disconnected from WiFi");
+  http.end();
+  switchToESPNow();
 }
 
-void loop() {
-  // MPU6050 gyroscope data reading and processing logic
-  Wire.beginTransmission(MPU6050_ADDRESS);
-  Wire.write(0x43);  // Starting register for gyroscope data (0x43 to 0x48 for X,Y,Z)
-  Wire.endTransmission(false);
-  Wire.requestFrom(MPU6050_ADDRESS, 6, true);  // Request 6 bytes (X,Y,Z)
+void sendESPNowMessage(uint8_t data) {
+  if (isESPNowMode) {
+    esp_err_t result = esp_now_send(parentAddress, &data, sizeof(data));
+    if (result == ESP_OK) {
+      Serial.println(data == 1 ? "signal sent to parents" : "signal sent to parents");
+    } else {
+      Serial.println("Error sending signal");
+      // Attempt to reinitialize ESP-NOW
+      initESPNow();
+    }
+  } else {
+    Serial.println("Not in ESP-NOW mode, message not sent");
+  }
+}
 
-  // Read gyroscope data
-  int16_t gyroX = (Wire.read() << 8) | Wire.read();
-  int16_t gyroY = (Wire.read() << 8) | Wire.read();
-  int16_t gyroZ = (Wire.read() << 8) | Wire.read();
-
-  // Calculate magnitude or use Z-axis value
-  int16_t gyroZ_abs = abs(gyroZ); // Use absolute value for simplicity
-  
-  // Define movement threshold (adjust as needed)
-  int movementThreshold = 2000; // Example threshold
-  
-  // Check if there is movement based on Z-axis gyroscope reading
+void processMovement(int16_t gyroZ_abs) {
+  int movementThreshold = 2000;
   bool isMovement = (gyroZ_abs > movementThreshold);
 
-  // Movement detection logic
   if (isMovement) {
-    consecutiveStopCount = 0; // Reset stop count
+    consecutiveStopCount = 0;
     consecutiveMovementCount++;
 
-    // Check for start message condition
     if (consecutiveMovementCount >= 3 && !movementDetected) {
       movementDetected = true;
       Serial.println("Movement started");
-      uint8_t data = 1; // Send 1 for movement started
-      esp_err_t result = esp_now_send(parentAddress, &data, sizeof(data));
-
-      if (result == ESP_OK) {
-        Serial.println("Movement started signal sent successfully");
-        HM++; // Increment the count
-        Serial.print("movements count is ");
-        Serial.println(HM);
-      } else {
-        Serial.println("Error sending movement started signal");
-      }
+      sendESPNowMessage(1);
+      HM++;
+      Serial.print("movements count is ");
+      Serial.println(HM);
     }
   } else {
-    consecutiveMovementCount = 0; // Reset movement count
+    consecutiveMovementCount = 0;
     consecutiveStopCount++;
 
-    // Check for stop message condition
     if (consecutiveStopCount >= 400 && movementDetected) {
       movementDetected = false;
       Serial.println("Movement stopped");
-      uint8_t data = 0; // Send 0 for movement stopped
-      esp_err_t result = esp_now_send(parentAddress, &data, sizeof(data));
-
-      if (result == ESP_OK) {
-        Serial.println("Movement stopped signal sent successfully");
-      } else {
-        Serial.println("Error sending movement stopped signal");
-      }
+      sendESPNowMessage(0);
     }
   }
+}
 
-  // Reset HM every 1 hour
+void loop() {
+  Wire.beginTransmission(MPU6050_ADDRESS);
+  Wire.write(0x43);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU6050_ADDRESS, 6, true);
+
+  int16_t gyroZ = (Wire.read() << 8) | Wire.read();
+  int16_t gyroZ_abs = abs(gyroZ);
+
+  processMovement(gyroZ_abs);
+
   unsigned long currentMillis = millis();
   if (currentMillis - lastResetTime >= ONE_HOUR) {
     Serial.print("movements count before reset is ");
     Serial.println(HM);
 
-    // Connect to WiFi, upload to ThingSpeak, and disconnect before resetting HM
     uploadToThingSpeak();
     
-    HM = 0; // Reset HM
-    lastResetTime = currentMillis; // Update last reset time
+    HM = 0;
+    lastResetTime = currentMillis;
     Serial.println("HM reset");
   }
 
-  delay(10); // Adjust delay as needed before next operation
+  delay(10);
 }
