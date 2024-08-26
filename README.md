@@ -9,7 +9,7 @@ This project involves developing a baby monitoring system using Arduino, various
 ## Features
 - Environmental Monitoring: Monitors temperature and humidity around the baby's bed every half an hour to ensure a comfortable environment.
 - Video Streaming: Streams live video from the baby's room using the ESP32 CAM, allowing real-time monitoring of the baby's activities.
-- Movement Detection: detects baby's movement using gyroscope providing additional monitoring capabilities.
+- Movement Detection: Detects the baby's movement using a gyroscope, providing live movement alerts and an hourly sum of movements for additional monitoring capabilities.
 - Data Visualization: Logs and visualizes environmental data using ThingSpeak, offering a dashboard for tracking and analyzing the baby's environment over time.
 
 ## Components
@@ -20,6 +20,7 @@ This project involves developing a baby monitoring system using Arduino, various
 - LED Screen: Displays real-time data and status messages. Useful for visual feedback and monitoring system status at a glance.
 - Green LED Light: Indicates movements in the baby's bed.
 - Batteries (3 units): Power source for two of the ESP32 units, ensuring their operation and portability.
+- SPDT slide switch (3 units): Used to control the power supply to the ESP32 units.
 - 330 Ohm Resistor: Used to limit current and protect components, such as LEDs, from excessive current.
 
 ## Software and Services
