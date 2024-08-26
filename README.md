@@ -7,7 +7,7 @@ Arduino Labratory Final project: A home made baby sensor, using esp32, esp32 cam
 This project involves developing a baby monitoring system using Arduino, various sensors, ESP32 microcontrollers, and an ESP32-CAM. The system monitors the baby's environment, ensuring their safety and comfort.
 
 ## Features
-- Environmental Monitoring: Monitors temperature and humidity around the baby's bed to ensure a comfortable environment.
+- Environmental Monitoring: Monitors temperature and humidity around the baby's bed every half an hour to ensure a comfortable environment.
 - Video Streaming: Streams live video from the baby's room using the ESP32 CAM, allowing real-time monitoring of the baby's activities.
 - Movement Detection: detects baby's movement using gyroscope providing additional monitoring capabilities.
 - Data Visualization: Logs and visualizes environmental data using ThingSpeak, offering a dashboard for tracking and analyzing the baby's environment over time.
@@ -19,7 +19,7 @@ This project involves developing a baby monitoring system using Arduino, various
 - Gyroscope (MPU6050): Detects orientation and motion, helping to monitor the baby's movements and detect any unusual activity.
 - LED Screen: Displays real-time data and status messages. Useful for visual feedback and monitoring system status at a glance.
 - Green LED Light: Indicates movements in the baby's bed.
-- Batteries (2 units): Power source for two of the ESP32 units, ensuring their operation and portability.
+- Batteries (3 units): Power source for two of the ESP32 units, ensuring their operation and portability.
 - 330 Ohm Resistor: Used to limit current and protect components, such as LEDs, from excessive current.
 
 ## Software and Services
@@ -58,7 +58,9 @@ Wiring Instructions:
 2. Connect the sensor’s GND to ESP32 GND.
 3. Connect the sensor’s SDA to ESP32 GPIO 21.
 4. Connect the sensor’s SCL to ESP32 GPIO 22.
-5. connect the esp32 to a battery. **explain when you know**
+5. Connect the ESP32’s positive pin to the left leg of the SPDT slide switch.
+6. Connect the middle leg of the SPDT slide switch to the battery’s positive terminal.
+7. Connect the ESP32’s negative pin to the battery’s negative terminal.
 
 - ESP32 Unit 2 (Mattress):
 Gyroscope (MPU6050):
@@ -67,7 +69,9 @@ Wiring Instructions:
 2. Connect the gyroscope’s GND to ESP32 GND.
 3. Connect the gyroscope’s SDA to ESP32 GPIO 21.
 4. Connect the gyroscope’s SCL to ESP32 GPIO 22.
-5. connect the esp32 to a battery. **explain when you know**
+5. Connect the ESP32’s positive pin to the left leg of the SPDT slide switch.
+6. Connect the middle leg of the SPDT slide switch to the battery’s positive terminal.
+7. Connect the ESP32’s negative pin to the battery’s negative terminal.
 
 - ESP32 Unit 3 (Parents):
 LED Screen (OLED) and green LED lights: 
@@ -79,6 +83,9 @@ Wiring Instructions:
 5. connect green LED's long leg to A4.
 6. connect green LED's short leg to a 330 ohm resistor. 
 7. connect the second leg of the resistor to ESP32 GND.
+8. Connect the ESP32’s positive pin to the left leg of the SPDT slide switch.
+9. Connect the middle leg of the SPDT slide switch to the battery’s positive terminal.
+10. Connect the ESP32’s negative pin to the battery’s negative terminal.
 
 Detailed Diagrams:
 For detailed diagrams images, visit the [Images Repository](Pictures/Circuit_diagrams_Pictures).
@@ -143,8 +150,6 @@ Upload Instructions:
 9. Press the RST button on the ESP32 CAM to reset the board.
 10. Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
 11. Press start video button.
-
-![Baby_Cam](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGs4cHNldTRyaWtoYWl0d213Yno2cDRuY2Zld2I5eXI5NnlyZWx1ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6ZtqJw69RlbU0KuA/giphy.gif)
 
 ### Using the Baby's Sensor
 Few last steps and the baby sensor is ready for use:
