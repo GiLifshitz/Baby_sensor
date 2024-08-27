@@ -164,3 +164,6 @@ Few last steps and the baby sensor is ready for use:
 - Put the Mattress esp32 under the mattress.
 - Plug the Parents esp to the socket where it's visible for you.
 - use your phone or computer to look at the camera and ThingSpeak figures to monitor your precious baby while he/she is sleeping.
+
+***ThingSpeak Chart Examples:***
+For examples of ThingSpeak charts, visit the [ThingSpeak Chart Repository](Pictures/ThingSpeak_Charts).
