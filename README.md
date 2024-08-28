@@ -92,8 +92,8 @@ Wiring Instructions:
 10. Connect the ESP32’s negative pin to the battery’s negative terminal.
 
 ***Detailed Diagrams:***
--For detailed diagrams images, visit [Images Repository](Pictures/Circuit_diagrams_Pictures).
--For Pictures of the Units, visit [ESP32 Pictures Repository](Pictures/ESP32_Pictures).
+- For detailed diagrams images, visit [Images Repository](Pictures/Circuit_diagrams_Pictures).
+- For Pictures of the Units, visit [ESP32 Pictures Repository](Pictures/ESP32_Pictures).
 
 #### Uploading Code to ESP32 Units
 - **Important note** Library Installation: If the Arduino IDE alerts you that you are missing libraries while uploading code, follow these steps to install them:
