@@ -147,7 +147,7 @@ Upload Instructions:
 2. Open the [ESP32_CAM.ino](Codes/ESP32_CAM_Codes/ESP32_CAM.ino) file from this folder.
 3. Select the appropriate board (ESP32 DEV module) from the Tools > Board menu.
 4. select the appropriate partition scheme (minimal SPIFFS) from the Tools menu.
-5. enable PSRAM (minimal SPIFFS) from the Tools menu
+5. enable PSRAM from the Tools menu
 6. Select the correct port from the Tools > Port menu.
 7. Click the Upload button to upload the code to the ESP32 CAM.
 8. Open the Serial Monitor from the Tools > Serial Monitor menu.
