@@ -6,13 +6,13 @@
 #include <EEPROM.h>
 
 // MAC address of the Parent ESP32 (Receiver with OLED)
-uint8_t parentAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4D, 0x0C}; 
+uint8_t parentAddress[] = {0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX}; 
 
 // ThingSpeak credentials
-const char *ssid = "Kim";
-const char *password = "0526693338";
-unsigned long channelNumber = 2607721;
-const char *apiKey = "O6JD5G6007EWZCIV";
+const char *ssid = "SSID";
+const char *password = "Password";
+unsigned long channelNumber = ChannelID;
+const char *apiKey = "apikey";
 WiFiClient client;
 
 // Structure to send data
