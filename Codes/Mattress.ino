@@ -7,15 +7,15 @@
 #define ONE_HOUR 2*60*1000 // 1 hour in milliseconds (adjust as needed)
 
 // WiFi credentials
-const char* ssid = "Kim";
-const char* password = "0526693338";
+const char* ssid = "SSID";
+const char* password = "Password";
 
 // ThingSpeak configuration
-const char* apiKey = "O6JD5G6007EWZCIV";
-const unsigned long channelID = 2607721;
+const char* apiKey = "apikey";
+const unsigned long channelID = ChannelID;
 
 // MAC address of the parent ESP32
-uint8_t parentAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4D, 0x0C};
+uint8_t parentAddress[] = {0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX};
 
 // State variables
 bool movementDetected = false;
