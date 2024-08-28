@@ -145,15 +145,15 @@ Code Purpose: Streams video from the baby’s room. Manages the camera and SD ca
 Upload Instructions:
 1. Save the sketch files from the [ESP32_CAM_Codes](Codes/ESP32_CAM_Codes) folder into one folder.
 2. Open the [ESP32_CAM.ino](Codes/ESP32_CAM_Codes/ESP32_CAM.ino) file from this folder.
-3. Select the appropriate board (ESP32 DEV module) from the Tools > Board menu.
-4. select the appropriate partition scheme (minimal SPIFFS) from the Tools menu.
-5. enable PSRAM from the Tools menu
+3. Select the appropriate board (AI Thinker ESP32-CAM) from the Tools > Board menu.
 6. Select the correct port from the Tools > Port menu.
-7. Click the Upload button to upload the code to the ESP32 CAM.
-8. Open the Serial Monitor from the Tools > Serial Monitor menu.
-9. Press the RST button on the ESP32 CAM to reset the board.
-10. Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
-11. Press start video button.
+7. 4. Change SSID to your WiFi name in line 20.
+8. Change Password to your WiFi password in line 21.
+9. Click the Upload button to upload the code to the ESP32 CAM.
+10. Open the Serial Monitor from the Tools > Serial Monitor menu.
+11. Press the RST button on the ESP32 CAM to reset the board.
+12. Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
+13. Press start video button.
 
 ![Baby_Cam](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGs4cHNldTRyaWtoYWl0d213Yno2cDRuY2Zld2I5eXI5NnlyZWx1ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6ZtqJw69RlbU0KuA/giphy.gif)
 
