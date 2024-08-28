@@ -92,7 +92,7 @@ Wiring Instructions:
 10. Connect the ESP32’s negative pin to the battery’s negative terminal.
 
 ***Detailed Diagrams:***
-For detailed diagrams images, visit the [Images Repository](Pictures/Circuit_diagrams_Pictures).
+For detailed diagrams images, visit [Images Repository](Pictures/Circuit_diagrams_Pictures).
 
 #### Uploading Code to ESP32 Units
 - **Important note** Library Installation: If the Arduino IDE alerts you that you are missing libraries while uploading code, follow these steps to install them:
@@ -155,6 +155,8 @@ Upload Instructions:
 12. Copy the IP address displayed in the Serial Monitor and paste it into your browser to access the video stream.
 13. Press start video button.
 
+For screenshots taken from the ESP32-CAM visit [ESP32 CAM Screenshots Repository](Pictures/ESP32_CAM_Screenshots)
+
 ![Baby_Cam](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGs4cHNldTRyaWtoYWl0d213Yno2cDRuY2Zld2I5eXI5NnlyZWx1ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6ZtqJw69RlbU0KuA/giphy.gif)
 
 ### Using the Baby's Sensor
@@ -166,4 +168,4 @@ Few last steps and the baby sensor is ready for use:
 - use your phone or computer to look at the camera and ThingSpeak figures to monitor your precious baby while he/she is sleeping.
 
 ***ThingSpeak Chart Examples:***
-For examples of ThingSpeak charts, visit the [ThingSpeak Chart Repository](Pictures/ThingSpeak_Charts).
+For examples of ThingSpeak charts, visit [ThingSpeak Chart Repository](Pictures/ThingSpeak_Charts).
