@@ -7,8 +7,8 @@
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
 
 // MAC addresses of the sender devices
-uint8_t bearAddress[] = {0x44, 0x17, 0x93, 0xE0, 0xA4, 0x20};  // Bear
-uint8_t mattressAddress[] = {0x34, 0x94, 0x54, 0x5F, 0x4F, 0x18};  // Mattress
+uint8_t bearAddress[] = {0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX};  // Bear
+uint8_t mattressAddress[] = {0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX};  // Mattress
 
 // Structure to receive temperature and humidity data from the Bear device
 typedef struct struct_message {
