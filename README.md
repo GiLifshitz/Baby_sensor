@@ -1,5 +1,5 @@
 # Baby_sensor
-Arduino Labratory Final project: A home made baby sensor, using esp32, esp32 cam more.
+Arduino Labratory Final Project: a home-made baby-sensor, using ESP32, ESP32-CAM and more.
 
 ![Baby Crying](https://media.giphy.com/media/2Qs2hKWMvEzdu/giphy.gif)
 
